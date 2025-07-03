@@ -1,0 +1,17 @@
+### get articles
+
+GET http://localhost:8000/articles/
+
+### creat article
+
+POST http://localhost:8000/articles/
+Content-Type: application/json
+
+{
+  "title":"test 2", 
+  "short_desc":"test short description 2 ",
+  "explanation":"test long description for test 2",
+  "category":[2],
+  "function":[1,2,3],
+  "shortcut":[1,2,3]
+}

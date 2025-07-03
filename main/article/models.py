@@ -41,9 +41,9 @@ class Article(TimeStampModel):
   explanation = models.TextField(null=False,blank=False)
   #relaciones
   category = models.ManyToManyField(Category)
-  image = models.ManyToManyField(Image)
-  function = models.ManyToManyField(Function)
-  shortcut = models.ManyToManyField(Shortcut)
+  image = models.ManyToManyField(Image,null=True,blank=True)
+  function = models.ManyToManyField(Function,null=True,blank=True)
+  shortcut = models.ManyToManyField(Shortcut,null=True,blank=True)
   
   def __str__(self):
     return self.title
