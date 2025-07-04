@@ -13,6 +13,19 @@ class ArticleView(APIView):
     
     return Response(serializer.data)
   
+  def get(self, request,id):
+    try:
+      article = Article.objects.get(id=id)
+      
+      serializer = ArticleSerializer(article)
+      
+      return Response(serializer.data)
+    except Article.DoesNotExist as e:
+      return Response({'message':str(e)},status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+      return Response({'message':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
   def post(self,request):
     #recibe data
     title = request.data.get("title")
@@ -57,7 +70,59 @@ class ArticleView(APIView):
       return Response({"error",str(e)},status=status.HTTP_400_BAD_REQUEST)
   
   def put(self,request,id):
-    pass
-  
+    try:
+      #get article from db - Check if article exists
+      article = Article.objects.get(id=id)
+    
+      #get info from request. Validate field that are not empy and validate the type
+      title = request.data.get('title')
+      short_desc = request.data.get('short_desc')
+      explanation = request.data.get('explanation')
+      shortcut = request.data.get('shortcut')
+      function = request.data.get('function')
+      category = request.data.get('category')
+      
+      fields = {
+        "title":title,
+        "short_desc":short_desc,
+        "explanation":explanation,
+        "shortcut":shortcut,
+        "function":function,
+        "category":category
+      }
+      
+      new_info_article = {key: value for key, value in fields.items() if value is not None}
+
+      #update article with new info passed
+      for key,value in new_info_article.items():
+        if key in ['category','shortcut','function']:
+          getattr(article,key).set(value if isinstance(value,list) else [value])
+        else:
+          setattr(article,key,value)
+        
+      article.save()
+      #serialize article
+      serializer = ArticleSerializer(article)
+      
+      #return article updated
+      return Response(serializer.data)
+    except Article.DoesNotExist as e:
+      return Response({'message':str(e)},status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+      return Response({'message':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
   def delete(self,request,id):
-    pass
+    try:
+      #get article from db
+      article = Article.objects.get(id=id)
+      #delete from db
+      article.delete()
+      #return message 
+      return Response({'message':f'Article with id {id} has been deleted!'})
+    except Article.DoesNotExist as e:
+      return Response({'message':str(e)},status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+      return Response({'message':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)

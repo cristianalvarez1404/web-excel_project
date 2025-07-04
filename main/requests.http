@@ -2,6 +2,10 @@
 
 GET http://localhost:8000/articles/
 
+### get article
+GET http://localhost:8000/articles/2/
+
+
 ### creat article
 
 POST http://localhost:8000/articles/
@@ -14,4 +18,27 @@ Content-Type: application/json
   "category":[2],
   "function":[1,2,3],
   "shortcut":[1,2,3]
+}
+
+### update article
+
+PUT http://localhost:8000/articles/2/
+Content-Type: application/json
+
+{
+  "title":"test updated 2", 
+  "short_desc":"test short updated description 2 ",
+  "explanation":"test long updated description for test 2",
+  "function":[1,3,2],
+  "shortcut":[2]
+
+}
+
+### delete article
+
+DELETE http://localhost:8000/articles/6/
+Content-Type: application/json
+
+{
+
 }
