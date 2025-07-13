@@ -5,9 +5,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
+from .filters import ArticleFilter
 
 class ArticleView(APIView):
-
   # permission_classes = [IsAuthenticated]
 
   def get_permissions(self):
@@ -17,9 +18,14 @@ class ArticleView(APIView):
 
   def get(self,request):
     articles = Article.objects.all()
-    serializer = ArticleSerializer(articles,many=True)
+    filtered_articles = ArticleFilter(request.GET, queryset=articles).qs #http://127.0.0.1:8000/articles/?title=test
+    paginator = PageNumberPagination()
+    paginator.page_size = 10
+    paginate_articles = paginator.paginate_queryset(filtered_articles,request)
+
+    serializer = ArticleSerializer(paginate_articles,many=True)
     
-    return Response(serializer.data)
+    return paginator.get_paginated_response(serializer.data)
   
   def post(self,request):
     if not request.user.is_authenticated:
